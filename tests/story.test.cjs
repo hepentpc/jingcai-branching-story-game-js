@@ -64,12 +64,17 @@ test("原版的三個代表學習路徑作為暫定通關",()=>{
  assert.equal(story.endings.CAC.steps[2],"量與感受調強度");
 });
 
-test("沒有實際插圖時維持所有情境共用的『劇情圖片』佔位框",()=>{
+test("圖片上傳前後皆保留佔位框，並準備好正確的 13 張圖片連結",()=>{
  const html=read("index.html");
  assert.ok(html.includes('id="scene-image"'));
  assert.ok(html.includes(">劇情圖片</span>"));
  assert.ok(!html.includes("scene-video"));
- assert.ok(!html.includes("<img "));
+ assert.ok(html.includes('<img id="scene-image"'));
+ assert.ok(html.includes('id="image-placeholder"'));
+ assert.ok(read("assets/app.js").includes('"./images/" + sceneId + ".webp"'));
+ const wf=read(".github/workflows/install-images.yml");
+ assert.ok(wf.includes("jingcai-junior-13-images.zip"));
+ assert.ok(wf.includes("images/{node}.webp"));
  assert.ok(html.indexOf('data/story.js')<html.indexOf('data/outcomes.js'));
  assert.ok(html.indexOf('data/outcomes.js')<html.indexOf('assets/app.js'));
 });
