@@ -9,7 +9,7 @@
     again:find("again-btn"),rethink:find("rethink-btn"),confirm:find("confirm-btn"),
     sceneTitle:find("scene-title"),sceneText:find("scene-narrative"),
     sceneChip:find("scene-chip"),sceneNumber:find("scene-number"),
-    sceneImage:find("scene-image"),
+    sceneImage:find("scene-image"),imagePlaceholder:find("image-placeholder"),
     choices:find("choices"),step:find("step-fraction"),fill:find("progress-fill"),trail:find("route-trail"),
     endingTitle:find("ending-title"),endingIntro:find("ending-intro"),
     code:find("ending-code"),journey:find("journey-steps"),
@@ -56,11 +56,29 @@
     confirmed = false;
     renderScene();
   }
-  // 第一幕使用十秒影片；影片讀取失敗時，退回原本的 S0 圖片。
-  // 切換到其他 12 個情境時，只顯示原本的插圖。
+  // 13 個情境分別使用 images/節點代碼.webp。
+  // 若圖檔還沒安裝或載入失敗，就顯示原本的「劇情圖片」佔位框。
   function showSceneMedia(sceneId) {
-    // 圖片尚未製作：只更新佔位框描述，不發出圖片請求。
-    dom.sceneImage.setAttribute("aria-label","情境「"+story.nodes[sceneId].title+"」的劇情圖片預留區");
+    const image = dom.sceneImage;
+    const placeholder = dom.imagePlaceholder;
+    const source = "./images/" + sceneId + ".webp";
+    image.hidden = true;
+    placeholder.hidden = false;
+    image.dataset.scene = sceneId;
+    image.alt = "情境「" + story.nodes[sceneId].title + "」的插圖";
+    image.onload = () => {
+      if (image.dataset.scene !== sceneId || current !== sceneId || dom.game.hidden) return;
+      image.hidden = false;
+      placeholder.hidden = true;
+    };
+    image.onerror = () => {
+      if (image.dataset.scene !== sceneId) return;
+      image.hidden = true;
+      placeholder.hidden = false;
+    };
+    image.src = source;
+    // 返回同一節點時，已載入的快取圖片也應立即顯示。
+    if (image.complete && image.naturalWidth > 0) image.onload();
   }
   function renderScene() {
     const node = story.nodes[current];
