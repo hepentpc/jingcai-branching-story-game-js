@@ -126,9 +126,9 @@ main{flex:1}
 .section-heading{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:0 0 24px}
 .section-number{width:40px;height:40px;display:grid;place-items:center;background:#E0EFFB;border-radius:50%;font-size:17px;font-weight:900;color:#396E99}
 .section-heading h2{font-size:clamp(21px,2.4vw,27px);font-weight:950;line-height:1.45;margin:0}
-.route-badge{display:inline-block;border-radius:100px;padding:8px 14px;background:#fde7ec;color:#a8385e;font-size:17px;font-weight:900;margin-left:auto}
+.route-badge{display:inline-block;border-radius:100px;padding:8px 14px;background:#E0F0FC;color:#396C93;font-size:17px;font-weight:900;margin-left:auto}
 .journey-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;margin:0;padding:0;counter-reset:step}
-.journey-steps li{border:1px solid #D8E6F1;background:#fff7f8;border-radius:19px;padding:20px 16px;min-height:107px;font-size:19px;font-weight:900;line-height:1.7;display:flex;gap:14px;align-items:center;overflow-wrap:anywhere}
+.journey-steps li{border:1px solid #D8E6F1;background:#F5FAFF;border-radius:19px;padding:20px 16px;min-height:107px;font-size:19px;font-weight:900;line-height:1.7;display:flex;gap:14px;align-items:center;overflow-wrap:anywhere}
 .journey-steps li:before{counter-increment:step;content:counter(step,decimal-leading-zero);align-self:flex-start;color:#437AA5;font-size:16px;font-weight:900}
 .confirm-actions{padding:24px 0 9px;text-align:center}
 .confirm-actions>p{margin:0 0 18px;font-size:19px;font-weight:850}
