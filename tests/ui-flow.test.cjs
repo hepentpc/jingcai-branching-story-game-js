@@ -19,6 +19,12 @@ function setup(){
  const names="intro game ending header-reset start-btn back-btn again-btn rethink-btn confirm-btn scene-title scene-narrative scene-chip scene-number scene-image image-placeholder choices step-fraction progress-fill route-trail ending-title ending-intro ending-code journey-steps confirm-actions feedback-section feedback-heading positive-text improve-text status-text status-icon brand-link".split(" ");
  const el=Object.fromEntries(names.map(id=>[id,element()]));
  el["status-text"].card=element();
+ // 修改圖片網址時，瀏覽器會清除上一個圖片的載入狀態。
+ const scenePicture = el["scene-image"];
+ Object.defineProperty(scenePicture, "src", {
+   get(){ return this._src || ""; },
+   set(next){ this._src=next; this.complete=false; this.naturalWidth=0; }
+ });
  const slides=[element(),element(),element()];
  const buttons=[element(),element(),element()];
  buttons.forEach((b,i)=>b.dataset.guide=String(i));
