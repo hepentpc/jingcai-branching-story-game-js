@@ -1,0 +1,77 @@
+name: 安裝國中版十三張劇情圖片
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - jingcai-junior-13-images.zip
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: install-junior-story-images
+  cancel-in-progress: false
+
+jobs:
+  install-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 取得國中版專案
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: 檢查圖包並自動安裝十三張圖片
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile, BadZipFile
+
+          archive = Path("jingcai-junior-13-images.zip")
+          if not archive.is_file():
+              raise SystemExit("尚未找到圖包：請將 ZIP 放在 GitHub Repository 根目錄。")
+
+          nodes = "S0 A1 AA2 AB2 AC2 B1 BA2 BB2 BC2 C1 CA2 CB2 CC2".split()
+          required = [f"images/{node}.webp" for node in nodes]
+          try:
+              with ZipFile(archive, "r") as z:
+                  listed = z.namelist()
+                  if len(listed) != len(set(listed)):
+                      raise ValueError("ZIP 中有重複檔名")
+                  present = set(listed)
+                  missing = set(required) - present
+                  if missing:
+                      raise ValueError("缺少圖檔：" + ", ".join(sorted(missing)))
+                  if z.testzip() is not None:
+                      raise ValueError("ZIP 壓縮資料損壞")
+                  for relative in required:
+                      info = z.getinfo(relative)
+                      if info.file_size < 1024 or info.file_size > 8_000_000:
+                          raise ValueError(f"圖檔大小異常：{relative}")
+                      data = z.read(relative)
+                      if data[:4] != b"RIFF" or data[8:12] != b"WEBP":
+                          raise ValueError(f"圖檔並非 WebP：{relative}")
+                      destination = Path(relative)
+                      destination.parent.mkdir(parents=True, exist_ok=True)
+                      destination.write_bytes(data)
+                      print(f"已安裝 {relative}: {len(data)} 位元組")
+          except BadZipFile as exc:
+              raise SystemExit(f"ZIP 壓縮檔格式錯誤：{exc}")
+          PY
+      - name: 儲存圖片至 main 分支
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add images/
+          if git diff --cached --quiet; then
+            echo "13 張圖片均已安裝，無須再次提交。"
+            exit 0
+          fi
+          git commit -m "assets: install all 13 junior-high story illustrations"
+          git pull --rebase origin main
+          git push origin HEAD:main
