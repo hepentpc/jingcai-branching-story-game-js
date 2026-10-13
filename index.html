@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff7f7">
+  <meta name="description" content="經彩青春Do：透過三次選擇，一起學習月經關懷、破除偏見與自然談論。">
+  <title>經彩青春Do｜少男少女養成記</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./data/story.js" defer></script>
+  <script src="./data/outcomes.js" defer></script>
+  <script src="./assets/app.js" defer></script>
+</head>
+<body>
+<div class="app-shell">
+  <header class="site-header">
+    <a class="brand" id="brand-link" href="./" aria-label="回到經彩青春Do封面">
+      <span class="brand-symbol">國中</span>
+      <span class="brand-name">經彩青春<span class="brand-highlight">Do</span></span>
+    </a>
+    <button class="header-reset" type="button" id="header-reset" hidden>重新開始 <span aria-hidden="true">↗</span></button>
+  </header>
+  <main>
+    <section class="view intro" id="intro" aria-labelledby="intro-title">
+      <div class="intro-content">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>一場探索身體自主與月經平權的旅程</p>
+        <h1 id="intro-title">
+          <span class="intro-question">每一次選擇，</span>
+          <span class="intro-line">認識多元用品</span>
+          <span class="intro-line emphasis">理解生理假</span>
+          <span class="intro-line">破解月經迷思</span>
+        </h1>
+        <p class="intro-tip">從用品選擇、制度公平到生活迷思，練習有根據的判斷與同理。</p>
+      </div>
+      <section class="guide-panel" aria-labelledby="guide-title">
+        <div class="guide-header"><span class="guide-icon" aria-hidden="true">✦</span><div><p class="guide-eyebrow">出發前先看看</p><h2 id="guide-title">遊戲教學</h2></div></div>
+        <div class="guide-screen" aria-live="off">
+          <div class="guide-slide is-active" data-guide-slide="0" aria-hidden="false">
+            <div class="guide-illustration guide-read">
+              <div class="guide-paper" aria-hidden="true"><div class="paper-title"></div><div class="paper-line"></div><div class="paper-line short"></div><div class="paper-line"></div></div>
+              <span class="guide-deco" aria-hidden="true">✧</span>
+            </div>
+            <h3>第一步：讀一讀</h3>
+            <p>閱讀青青的經期困擾，找出情境中真正需要思考的問題。</p>
+          </div>
+          <div class="guide-slide" data-guide-slide="1" aria-hidden="true">
+            <div class="guide-illustration guide-choose" aria-hidden="true">
+              <div class="guide-choice">A</div><div class="guide-choice active">B <span>✓</span></div><div class="guide-choice">C</div>
+            </div>
+            <h3>第二步：選一選</h3>
+            <p>比較 A、B、C 三個回應，選擇你認為最合適的做法。</p>
+          </div>
+          <div class="guide-slide" data-guide-slide="2" aria-hidden="true">
+            <div class="guide-illustration guide-result" aria-hidden="true">
+              <span class="guide-check">✓</span>
+              <div class="guide-result-lines"><span></span><span></span><span></span></div>
+            </div>
+            <h3>第三步：看一看</h3>
+            <p>確認三次選擇，閱讀自己的判斷與可改進之處。</p>
+          </div>
+        </div>
+        <div class="guide-picks" aria-label="切換遊戲教學">
+          <button class="guide-pick is-active" type="button" data-guide="0" aria-pressed="true">讀一讀</button>
+          <button class="guide-pick" type="button" data-guide="1" aria-pressed="false">選一選</button>
+          <button class="guide-pick" type="button" data-guide="2" aria-pressed="false">看一看</button>
+        </div>
+        <p class="guide-intro">青青對月經、用品與運動有不少疑問。三次選擇，探索不同的想法與後果。</p>
+        <div class="intro-stats" aria-label="旅程玩法">
+          <span><strong>3</strong> 次選擇</span>
+          <span class="stat-divider" aria-hidden="true"></span>
+          <span><strong>27</strong> 種結局</span>
+          <span class="stat-divider" aria-hidden="true"></span>
+          <span><strong>∞</strong> 種學習可能</span>
+        </div>
+        <button class="primary-btn" id="start-btn" type="button">開始旅程 <span aria-hidden="true">→</span></button>
+      </section>
+    </section>
+    <section class="view game" id="game" hidden aria-labelledby="scene-title">
+      <div class="step-top">
+        <div>
+          <h1 class="step-heading">你的思考旅程正在展開</h1>
+          <p class="step-desc">分析情境、比較觀點，再做出你的選擇。</p>
+        </div>
+        <div class="step-fraction" id="step-fraction">01 <span>/ 03</span></div>
+      </div>
+      <div class="progress-track" aria-label="旅程進度"><div id="progress-fill" class="progress-fill"></div></div>
+      <div class="scene-layout">
+        <div class="scene-visual">
+          <div class="visual-topline"><span class="visual-tag">第 <span id="scene-number">1</span> 個情境</span><span class="visual-decor" aria-hidden="true">✳</span></div>
+          <div class="image-frame">
+            <div id="scene-image" class="scene-image" role="img" aria-label="劇情圖片預留區">
+              <span class="placeholder-mark" aria-hidden="true">✦</span>
+              <span>劇情圖片</span>
+            </div>
+          </div>
+          <p class="visual-caption">想一想：如果你也在現場，會怎麼做？</p>
+        </div>
+        <div class="scene-content">
+          <div class="scene-kicker"><span id="scene-chip">情境 1</span><span class="scene-separator" aria-hidden="true"></span><span>月經友善思辨</span></div>
+          <h2 id="scene-title" tabindex="-1">突然來了，怎麼辦？</h2>
+          <p id="scene-narrative" class="scene-narrative"></p>
+          <div class="choose-heading"><h3>你的判斷是什麼？</h3><span>選出最符合你想法的回應</span></div>
+          <div class="choices" id="choices" aria-label="三個回答"></div>
+          <p class="keyboard-hint">點選想說的話，就能繼續下一個情境。</p>
+        </div>
+      </div>
+      <div class="game-footer">
+        <button id="back-btn" class="back-btn" type="button">← 回到上一個情境</button>
+        <span class="route-trail" id="route-trail" aria-live="polite"></span>
+      </div>
+    </section>
+    <section class="view ending" id="ending" hidden aria-labelledby="ending-title">
+      <div class="ending-hero">
+        <div class="ending-icon" aria-hidden="true">✦</div>
+        <p class="eyebrow">三次選擇完成</p>
+        <h1 id="ending-title" tabindex="-1">你的選擇，形成了一段思考旅程。</h1>
+        <p id="ending-intro">先看看自己做的三次選擇，想一想，再決定要不要送出。</p>
+      </div>
+      <div class="ending-body">
+        <section aria-labelledby="summary-heading">
+          <div class="section-heading"><span class="section-number">一</span><h2 id="summary-heading">這是你的判斷歷程</h2><span id="ending-code" class="route-badge">路徑 ABB</span></div>
+          <ol class="journey-steps" id="journey-steps"></ol>
+          <div id="confirm-actions" class="confirm-actions">
+            <p>你確定要用這三個選擇，完成這趟旅程嗎？</p>
+            <div class="actions-row">
+              <button id="rethink-btn" class="secondary-btn" type="button">← 回頭再想一次</button>
+              <button id="confirm-btn" class="primary-btn" type="button">確定選擇 <span aria-hidden="true">→</span></button>
+            </div>
+          </div>
+        </section>
+        <section id="feedback-section" class="feedback-section" aria-labelledby="feedback-heading" hidden>
+          <div class="section-heading"><span class="section-number">二</span><h2 id="feedback-heading" tabindex="-1">看看這次判斷的回饋</h2></div>
+          <div class="feedback-grid">
+            <article class="feedback-card positive"><div class="feedback-icon" aria-hidden="true">✓</div><h3>做得好的地方</h3><p id="positive-text"></p></article>
+            <article class="feedback-card improve"><div class="feedback-icon" aria-hidden="true">↗</div><h3>可以改進的地方</h3><p id="improve-text"></p></article>
+            <article class="feedback-card result"><div class="feedback-icon" id="status-icon" aria-hidden="true">★</div><h3>過關狀態</h3><p id="status-text" aria-live="polite"></p></article>
+          </div>
+          <div class="ending-actions"><button class="primary-btn" id="again-btn" type="button">再玩一次，回到封面 <span aria-hidden="true">→</span></button></div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><span>經彩青春Do · 少男少女養成記</span><span>國中版｜少男少女養成記</span></footer>
+</div>
+</body>
+</html>
