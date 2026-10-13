@@ -241,7 +241,8 @@ main{flex:1}
   *,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
 
-/* 國中版：13 個節點均先預留圖片空間，不載入任何圖片或影片 */
-.scene-image{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;min-height:260px;color:#517EA1;font-weight:900;font-size:25px;letter-spacing:.08em;background:linear-gradient(145deg,#F5FAFE,#E0F0FC);border:2px dashed #A5C9E5;border-radius:20px}
-.scene-image .placeholder-mark{display:grid;place-items:center}
-@media(max-width:480px){.scene-image{min-height:180px;font-size:21px}}
+/* 國中版：實際插圖與尚未上傳時的佔位框共用同一個 16:9 空間。 */
+.scene-image{display:block;width:100%;height:100%;object-fit:cover;border:0;border-radius:0;background:#F5FAFE}
+.scene-image[hidden],.image-placeholder[hidden]{display:none!important}
+.image-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+@media(max-width:480px){.image-placeholder{font-size:21px}}
