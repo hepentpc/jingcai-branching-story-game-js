@@ -9,14 +9,14 @@ const story=context.window.STORY_DATA;
 function element(){
  const names=new Set();
  return {
-  hidden:false,disabled:false,style:{},dataset:{},textContent:"",innerHTML:"",handlers:{},attrs:{},
+  hidden:false,disabled:false,style:{},dataset:{},textContent:"",innerHTML:"",handlers:{},attrs:{},src:"",alt:"",complete:false,naturalWidth:0,
   classList:{toggle(key,on){if(on)names.add(key);else names.delete(key)},contains(key){return names.has(key)}},
   addEventListener(key,fn){this.handlers[key]=fn},setAttribute(k,v){this.attrs[k]=v},
   closest(){return this.card},focus(){},scrollIntoView(){},querySelector(){return null},contains(){return true}
  };
 }
 function setup(){
- const names="intro game ending header-reset start-btn back-btn again-btn rethink-btn confirm-btn scene-title scene-narrative scene-chip scene-number scene-image choices step-fraction progress-fill route-trail ending-title ending-intro ending-code journey-steps confirm-actions feedback-section feedback-heading positive-text improve-text status-text status-icon brand-link".split(" ");
+ const names="intro game ending header-reset start-btn back-btn again-btn rethink-btn confirm-btn scene-title scene-narrative scene-chip scene-number scene-image image-placeholder choices step-fraction progress-fill route-trail ending-title ending-intro ending-code journey-steps confirm-actions feedback-section feedback-heading positive-text improve-text status-text status-icon brand-link".split(" ");
  const el=Object.fromEntries(names.map(id=>[id,element()]));
  el["status-text"].card=element();
  const slides=[element(),element(),element()];
@@ -47,8 +47,20 @@ test("首頁動畫教學、開始旅程、ABC 選項及圖片佔位",()=>{
  assert.ok(e["choices"].innerHTML.includes('data-choice="A"'));
  assert.ok(e["choices"].innerHTML.includes('data-choice="B"'));
  assert.ok(e["choices"].innerHTML.includes('data-choice="C"'));
- assert.ok(e["scene-image"].attrs["aria-label"].includes("預留區"));
+ assert.equal(e["scene-image"].src,"./images/S0.webp");
+ assert.equal(e["scene-image"].hidden,true);
+ assert.equal(e["image-placeholder"].hidden,false);
+ e["scene-image"].complete=true;
+ e["scene-image"].naturalWidth=1672;
+ e["scene-image"].onload();
+ assert.equal(e["scene-image"].hidden,false);
+ assert.equal(e["image-placeholder"].hidden,true);
  g.choose("A");
+ assert.equal(e["scene-image"].src,"./images/A1.webp");
+ assert.equal(e["image-placeholder"].hidden,false,"切換情境先顯示佔位圖");
+ e["scene-image"].onerror();
+ assert.equal(e["scene-image"].hidden,true,"圖片不存在時不顯示破圖");
+ assert.equal(e["image-placeholder"].hidden,false);
  assert.equal(e["scene-title"].textContent,story.nodes.A1.title);
  g.click("back-btn");
  assert.equal(e["scene-title"].textContent,story.nodes.S0.title);
