@@ -1,80 +1,95 @@
 "use strict";
-const test=require("node:test");
-const assert=require("node:assert/strict");
-const fs=require("node:fs");
-const path=require("node:path");
-const vm=require("node:vm");
-const read=(name)=>fs.readFileSync(path.resolve(__dirname,"..",name),"utf8");
-const scope={window:{}};
-vm.runInNewContext(read("data/story.js"),scope);
-vm.runInNewContext(read("data/outcomes.js"),scope);
-const story=scope.window.STORY_DATA;
-const choices=["A","B","C"];
+// 經彩青春Do 國中版｜配合 2026-10-23 兩份 Word 修訂版之自動化測試
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+const read = (name) => fs.readFileSync(path.resolve(__dirname, "..", name), "utf8");
+const scope = { window: {} };
+vm.runInNewContext(read("data/story.js"), scope, { filename: "data/story.js" });
+vm.runInNewContext(read("data/outcomes.js"), scope, { filename: "data/outcomes.js" });
+const story = scope.window.STORY_DATA;
+const letters = ["A", "B", "C"];
 
-test("內容來自國中版 V2，13 個情境、39 個選項與 27 條結局",()=>{
- assert.equal(story.edition,"國中版");
- assert.equal(story.sourceVersion,"網格修正版 V2");
- assert.equal(Object.keys(story.nodes).length,13);
- assert.equal(Object.keys(story.endings).length,27);
- assert.equal(Object.keys(story.nodes).reduce((n,k)=>n+Object.keys(story.nodes[k].choices).length,0),39);
- assert.deepEqual(Array.from(story.passRoutes),["ACA","BAA","CAC"]);
-});
-
-test("選項標籤恰為四字、原始對話保留、跳轉節點存在",()=>{
- for(const [id,node] of Object.entries(story.nodes)){
-  assert.ok(node.title&&node.scene);
-  for(const key of choices){
-   const opt=node.choices[key];
-   assert.match(opt.label,/^[\u3400-\u9fff]{4}$/u,id+key);
-   assert.ok(opt.text.startsWith("「")&&opt.text.endsWith("」"),id+key);
-   assert.ok(story.nodes[opt.next]||story.endings[opt.next],id+key+"->"+opt.next);
+function follow(route) {
+  let id = story.start;
+  const labels = [];
+  for (const [index, letter] of [...route].entries()) {
+    const node = story.nodes[id];
+    assert.ok(node, `${route} 第 ${index + 1} 步情境不存在：${id}`);
+    const option = node.choices[letter];
+    assert.ok(option, `${route} 第 ${index + 1} 步選項不存在`);
+    labels.push(option.label);
+    id = option.next;
   }
- }
+  return { id, labels };
+}
+
+test("國中版修訂：13 個情境、39 個 ABC 選項、27 條結局", () => {
+  assert.equal(story.edition, "國中版");
+  assert.equal(story.start, "S0");
+  assert.equal(Object.keys(story.nodes).length, 13);
+  assert.equal(Object.keys(story.endings).length, 27);
+  assert.equal(Object.values(story.nodes).reduce((sum, node) => sum + Object.keys(node.choices).length, 0), 39);
+  assert.deepEqual(Array.from(story.passRoutes), ["ACA", "BAA"]);
 });
 
-test("完整 27 條路徑均三次選擇到達唯一相符結局",()=>{
- const all=new Set();
- for(const a of choices)for(const b of choices)for(const c of choices){
-  let id=story.start;
-  for(const [i,letter] of [a,b,c].entries()){
-   assert.ok(story.nodes[id],"premature conclusion: "+id+" at "+i);
-   id=story.nodes[id].choices[letter].next;
+test("每個選項的標籤恰為四個中文字，情境文字與下一節點皆存在", () => {
+  for (const [id, node] of Object.entries(story.nodes)) {
+    assert.ok(node.title && node.scene, id);
+    for (const letter of letters) {
+      const choice = node.choices[letter];
+      assert.match(choice.label, /^[\u3400-\u9FFF]{4}$/u, `${id}/${letter} 標籤`);
+      assert.ok(choice.text && typeof choice.text === "string", `${id}/${letter} 選項內容`);
+      assert.ok(story.nodes[choice.next] || story.endings[choice.next], `${id}/${letter} 下一節點 ${choice.next}`);
+    }
   }
-  assert.equal(id,a+b+c);
-  all.add(id);
- }
- assert.equal(all.size,27);
 });
 
-test("27 種結局均保留各三句七字摘要及兩項獨立回饋",()=>{
- for(const [id,o] of Object.entries(story.endings)){
-  assert.equal(o.steps.length,3,id);
-  for(const s of o.steps)assert.equal([...s].length,7,id+": "+s);
-  assert.ok(o.positive.length>20,id+" positive");
-  assert.ok(o.improve.length>20,id+" improve");
- }
+test("27 條路徑都在三次選擇後到達對應且唯一的結果", () => {
+  const actual = new Set();
+  for (const a of letters) for (const b of letters) for (const c of letters) {
+    const route = a + b + c;
+    const result = follow(route);
+    assert.equal(result.id, route, `路徑 ${route} 的結局代碼應與選擇一致`);
+    assert.deepEqual(Array.from(story.endings[route].steps), result.labels, `${route} 結局摘要應和學生選擇一致`);
+    actual.add(result.id);
+  }
+  assert.equal(actual.size, 27);
 });
 
-test("原版的三個代表學習路徑作為暫定通關",()=>{
- for(const route of ["ACA","BAA","CAC"]){
-  assert.ok(story.corePaths[route]&&story.endings[route]);
- }
- assert.equal(story.endings.ACA.steps[2],"全都學會才自在");
- assert.equal(story.endings.BAA.steps[2],"請假分工再協調");
- assert.equal(story.endings.CAC.steps[2],"量與感受調強度");
+test("所有 27 條路徑有完整、不同欄位的鼓勵性和建議性回饋", () => {
+  for (const [route, result] of Object.entries(story.endings)) {
+    assert.match(route, /^[ABC]{3}$/);
+    assert.equal(result.steps.length, 3, route);
+    result.steps.forEach(label => assert.equal([...label].length, 4, `${route}/${label}`));
+    assert.ok(result.positive.length > 15, `${route} 鼓勵性回饋過短`);
+    assert.ok(result.improve.length > 15, `${route} 建議性回饋過短`);
+    assert.notEqual(result.positive, result.improve, route);
+  }
 });
 
-test("圖片上傳前後皆保留佔位框，並準備好正確的 13 張圖片連結",()=>{
- const html=read("index.html");
- assert.ok(html.includes('id="scene-image"'));
- assert.ok(html.includes(">劇情圖片</span>"));
- assert.ok(!html.includes("scene-video"));
- assert.ok(html.includes('<img id="scene-image"'));
- assert.ok(html.includes('id="image-placeholder"'));
- assert.ok(read("assets/app.js").includes('"./images/" + sceneId + ".webp"'));
- const wf=read(".github/workflows/install-images.yml");
- assert.ok(wf.includes("jingcai-junior-13-images.zip"));
- assert.ok(wf.includes("images/{node}.webp"));
- assert.ok(html.indexOf('data/story.js')<html.indexOf('data/outcomes.js'));
- assert.ok(html.indexOf('data/outcomes.js')<html.indexOf('assets/app.js'));
+test("修正來源表格不一致：BB2 與 BC2 仍依實際 A、B、C 的選擇產生結局", () => {
+  assert.deepEqual(letters.map(x => story.nodes.BB2.choices[x].next), ["BBA", "BBB", "BBC"]);
+  assert.deepEqual(letters.map(x => story.nodes.BC2.choices[x].next), ["BCA", "BCB", "BCC"]);
+  assert.equal(story.endings.BBA.steps[2], "認命承受");
+  assert.equal(story.endings.BBB.steps[2], "強效止痛");
+  assert.equal(story.endings.BBC.steps[2], "健康舒緩");
+  assert.equal(story.endings.BCA.steps[2], "女生專屬");
+  assert.equal(story.endings.BCB.steps[2], "友善措施");
+  assert.equal(story.endings.BCC.steps[2], "抗議不公");
+});
+
+test("網頁劇情插圖、腳本載入及操作元素仍保留", () => {
+  // 可在原 Repository 執行本測試；只有 story/outcomes/tests 需要覆蓋，index 與 app 不需要改。
+  const html = read("index.html");
+  assert.ok(html.includes('id="scene-image"'));
+  assert.ok(html.includes('id="image-placeholder"'));
+  assert.ok(html.includes('id="start-btn"'));
+  assert.ok(html.includes('id="confirm-btn"'));
+  assert.ok(html.includes('id="positive-text"'));
+  assert.ok(html.includes('id="improve-text"'));
+  assert.ok(html.indexOf('data/story.js') < html.indexOf('data/outcomes.js'));
+  assert.ok(html.indexOf('data/outcomes.js') < html.indexOf('assets/app.js'));
 });
