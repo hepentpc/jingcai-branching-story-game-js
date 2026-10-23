@@ -246,3 +246,23 @@ main{flex:1}
 .scene-image[hidden],.image-placeholder[hidden]{display:none!important}
 .image-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 @media(max-width:480px){.image-placeholder{font-size:21px}}
+
+/* 封面新標題：手機版頁首適配 */
+@media (max-width: 480px) {
+  .brand {
+    font-size: clamp(12px, 3.3vw, 16px);
+    gap: 8px;
+  }
+
+  .brand-symbol {
+    min-width: 42px;
+    height: 42px;
+    font-size: 13px;
+  }
+
+  .header-reset {
+    font-size: 13px;
+    padding: 7px 8px;
+  }
+}
+
