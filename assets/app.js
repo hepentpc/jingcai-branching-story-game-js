@@ -25,7 +25,7 @@
 
   const displayLabels = {A:"A",B:"B",C:"C"};
   const displayRoute = (code) => String(code);
-  const passRoutes = new Set(story.passRoutes || []); // 暫定規則由劇本資料設定
+  const passRoutes = new Set(story.passRoutes || []); // 依目前已部署劇本的規則判定通關，不更改通關路徑。
   let trail = [];
   let current = story.start;
   let finished = null;
@@ -133,10 +133,12 @@
     const statusCard = dom.status.closest(".feedback-card");
     statusCard.classList.toggle("passed", passed);
     statusCard.classList.toggle("retry", !passed);
-    dom.statusIcon.textContent = passed ? "✓" : "↗";
+    // 關卡認證專屬圖示，避免與「做得好的地方」✓、「可以改進的地方」↗ 重複。
+    dom.statusIcon.textContent = passed ? "★" : "↻";
+    // 只有成功通關才顯示密碼；狀態在按下「確定選擇」後才會揭露。
     dom.status.textContent = passed ?
-      "恭喜過關！這條路徑目前設定為通關。也記得看看可以改進的地方。" :
-      "這次還沒過關。可以再玩一次，試試不同的回答。";
+      "恭喜你成功通關！\n獲得【經彩青春Do密碼】2599\n意義：愛我久久" :
+      "沒有過關，繼續加油，重新開啟另一個旅程，獲得通關密碼！";
     show("ending");
     focus(confirmed ? dom.feedbackHeading : dom.endingTitle);
   }
