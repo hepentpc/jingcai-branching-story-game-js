@@ -264,5 +264,43 @@ main{flex:1}
     font-size: 13px;
     padding: 7px 8px;
   }
+  
+/* 封面左上角：教材名稱與教學階段 */
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.brand-name {
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.brand-subtitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #507695;
+  letter-spacing: 0.02em;
+}
+
+/* 手機版 */
+@media (max-width: 480px) {
+  .brand {
+    gap: 9px;
+  }
+
+  .brand-name {
+    font-size: 18px;
+  }
+
+  .brand-subtitle {
+    font-size: 12px;
+  }
+}
+
 }
 
